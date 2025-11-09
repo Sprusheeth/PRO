@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Results - SESD Exam Portal</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/student.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; border-radius: 16px; padding: 2rem; position: relative; }
+        .close-modal { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; color: #64748b; }
+        .result-q-card { background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; }
+        .result-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem; }
+        .badge-correct { background: #dcfce7; color: #166534; }
+        .badge-incorrect { background: #fee2e2; color: #991b1b; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="dashboard.html" class="logo">SESD Portal</a>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="exams.html">My Exams</a></li>
+                <li><a href="results.html" class="active">Results</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container dashboard-container">
+        <header class="dashboard-header">
+            <div><h1>Exam History</h1><p>View your past performance and grades.</p></div>
+        </header>
+
+        <div id="resultsList" class="exam-list">
+            <p class="empty-state">Loading your results...</p>
+        </div>
+    </main>
+
+    <div id="resultDetailsModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeResultModal()">&times;</span>
+            <h2 id="modalExamTitle">Exam Details</h2>
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem; color: #64748b;">
+                <span id="modalScore">Score: -/-</span>
+                <span>•</span>
+                <span id="modalDate">Date: -</span>
+            </div>
+            <div id="modalQuestionsList"></div>
+        </div>
+    </div>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/student.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             const logoutBtn = document.getElementById('logoutBtn');
+             if (logoutBtn && typeof handleLogout === 'function') logoutBtn.addEventListener('click', handleLogout);
+             if(typeof loadStudentResults === 'function') loadStudentResults();
+        });
+    </script>
+</body>
+</html>

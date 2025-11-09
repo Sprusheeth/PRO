@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Dashboard - SESD Portal</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/student.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .status-flagged { background: #fee2e2; color: #991b1b; font-weight: 700; }
+        .flag-card { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="dashboard.html" class="logo">SESD Admin</a>
+            <ul class="nav-links">
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="students.html">Students</a></li>
+                <li><a href="exams.html">Exams</a></li>
+                <li><a href="grade.html">Grades</a></li>
+                <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container dashboard-container">
+        <header class="dashboard-header">
+            <div>
+                <h1>Professor Dashboard</h1>
+                <p>Overview of student performance and exam integrity.</p>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="main-column">
+                
+                <section class="dashboard-section">
+                     <div class="section-header">
+                        <h2 style="color: #dc2626;">⚠️ Flagged for Review</h2>
+                    </div>
+                    <div id="flaggedList" class="exam-list">
+                        <p class="empty-state">Loading...</p>
+                    </div>
+                </section>
+
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Average Class Performance (Last 7 Days)</h2>
+                    </div>
+                    <div class="dashboard-card">
+                        <canvas id="trendChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </section>
+
+                 <section class="dashboard-section">
+                     <div class="section-header"><h2>Recent Submissions</h2></div>
+                     <div id="recentSubmissionsList" class="exam-list">
+                         <p class="empty-state">Loading...</p>
+                     </div>
+                 </section>
+            </div>
+
+            <div class="side-column">
+                <div class="dashboard-card profile-card">
+                     <div class="profile-avatar" style="background: #fef3c7; color: #d97706;">👨‍🏫</div>
+                     <h3 id="profName">Professor</h3>
+                     <span class="role-badge">Faculty Account</span>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>Exams by Subject</h3>
+                    <div class="chart-container" style="height: 220px;">
+                        <canvas id="subjectPieChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>Quick Actions</h3>
+                    <a href="exams.html" class="btn btn-primary btn-full mb-2">+ New Exam</a>
+                    <a href="students.html" class="btn btn-secondary btn-full mb-2">View Students</a>
+                    <a href="grade.html" class="btn btn-secondary btn-full">Gradebook</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/professor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             const logoutBtn = document.getElementById('logoutBtn');
+             if (logoutBtn && typeof handleLogout === 'function') {
+                 logoutBtn.addEventListener('click', handleLogout);
+             }
+        });
+    </script>
+</body>
+</html>

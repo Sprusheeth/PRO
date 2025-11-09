@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - SESD Exam Portal</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="index.html" class="logo">SESD Portal</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="login.html" class="btn btn-secondary">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="auth-main">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>Create Account</h2>
+                <p>Join as a Student, Professor, or Organization</p>
+            </div>
+
+            <div class="role-toggle-container">
+                <div class="role-toggle-pill" id="rolePill"></div>
+                <button type="button" class="role-toggle-btn active" data-role="student" onclick="setAuthRole('student')">Student</button>
+                <button type="button" class="role-toggle-btn" data-role="professor" onclick="setAuthRole('professor')">Prof/Org</button>
+            </div>
+
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <input type="hidden" id="selectedRole" value="student">
+
+                <div class="form-group">
+                    <label for="fullName" class="form-label">Full Name (or Org Name)</label>
+                    <input type="text" id="fullName" class="form-input" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="name@domain.com" required>
+                </div>
+
+                <div class="form-group" id="studentBatchGroup">
+                    <label for="studentBatch" class="form-label">Select Batch / Status</label>
+                    <select id="studentBatch" class="form-input">
+                        <option value="Batch-A">Batch A (College)</option>
+                        <option value="Batch-B">Batch B (College)</option>
+                        <option value="Batch-C">Batch C (College)</option>
+                        <option value="PRIVATE_CANDIDATE">Private Candidate (No Batch)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="profBatchGroup" style="display: none;">
+                    <label for="profBatches" class="form-label">Managed Batches</label>
+                    <input type="text" id="profBatches" class="form-input" placeholder="Leave empty if Private Org">
+                    <small style="color: #64748b">College Profs: Enter batches (e.g., Batch-A). Private Orgs: Leave blank.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Min 6 chars" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                     <label for="confirmPassword" class="form-label">Confirm Password</label>
+                     <input type="password" id="confirmPassword" class="form-input" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">Create Account</button>
+            </form>
+
+            <div class="form-footer">
+                Already have an account? <a href="login.html">Sign in instead</a>
+            </div>
+        </div>
+    </main>
+
+    <footer><div class="container"><p>&copy; 2023 SESD Project.</p></div></footer>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>

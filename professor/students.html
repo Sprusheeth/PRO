@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Students - SESD Portal</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/student.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="dashboard.html" class="logo">SESD Admin</a>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="students.html" class="active">Students</a></li>
+                <li><a href="exams.html">Exams</a></li>
+                <li><a href="grade.html">Grades</a></li>
+                <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container dashboard-container">
+        <header class="dashboard-header">
+            <div><h1>Student Roster</h1><p>View students in your assigned batches.</p></div>
+        </header>
+
+        <div class="dashboard-card mb-4">
+            <label class="form-label" style="display:inline-block; margin-right: 1rem;">Filter by Batch:</label>
+            <select id="batchFilter" class="form-input" style="width: 200px; display:inline-block;" onchange="filterStudents()">
+                <option value="ALL">All My Batches</option>
+                <option value="Batch-A">Batch A</option>
+                <option value="Batch-B">Batch B</option>
+                <option value="Batch-C">Batch C</option>
+            </select>
+        </div>
+
+        <div class="exam-list-grid" id="studentList">
+        </div>
+    </main>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/professor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             const logoutBtn = document.getElementById('logoutBtn');
+             if (logoutBtn && typeof handleLogout !== 'undefined') {
+                 logoutBtn.addEventListener('click', handleLogout);
+             }
+             if (typeof loadStudents !== 'undefined') {
+                loadStudents();
+             }
+        });
+    </script>
+</body>
+</html>

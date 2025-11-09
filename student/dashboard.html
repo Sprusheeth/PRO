@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - SESD Exam Portal</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/student.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="dashboard.html" class="logo">SESD Portal</a>
+            <ul class="nav-links">
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="exams.html">My Exams</a></li>
+                <li><a href="results.html">Results</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container dashboard-container">
+        <header class="dashboard-header">
+            <div>
+                <h1>Hello, <span id="studentName">Student</span>! 👋</h1>
+                <p>You are ready to learn. Check your pending exams below.</p>
+            </div>
+            <div class="header-date" id="currentDate">
+                October 26, 2023
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="main-column">
+                <section class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;">📝</div>
+                        <div class="stat-info">
+                            <h3>Exams Taken</h3>
+                            <p class="stat-number" id="examsTakenCount">-</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #dcfce7; color: #059669;">🎯</div>
+                        <div class="stat-info">
+                            <h3>Average Score</h3>
+                            <p class="stat-number" id="averageScore">-</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fef3c7; color: #d97706;">⏳</div>
+                        <div class="stat-info">
+                            <h3>Pending</h3>
+                            <p class="stat-number" id="pendingExamsCount">-</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Available Now</h2>
+                        <a href="exams.html" class="text-primary text-small">View all</a>
+                    </div>
+                    <div class="exam-list" id="availableExamsList">
+                        <p class="empty-state">Looking for exams...</p>
+                    </div>
+                </section>
+
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Recent Results</h2>
+                        <a href="results.html" class="text-primary text-small">View all</a>
+                    </div>
+                    <div class="exam-list" id="recentActivityList">
+                        <p class="empty-state">Loading results...</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="side-column">
+                <div class="dashboard-card profile-card">
+                    <div class="profile-avatar">👨‍🎓</div>
+                    <h3 id="profileName">Student Name</h3>
+                    <p id="profileEmail">student@university.edu</p>
+                    <span class="role-badge" id="profileBatch">Student Account</span>
+                </div>
+
+                <div class="dashboard-card" style="background: #f0f9ff; border-color: #bae6fd;">
+                    <h3 style="color: #0369a1;">🔑 Private Exam?</h3>
+                    <p style="color: #334155; font-size: 0.9rem; margin-bottom: 1rem;">Enter the 6-digit code provided by your organization to start.</p>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="examCodeInput" class="form-input" placeholder="Enter Code" style="text-transform: uppercase; letter-spacing: 2px; font-weight: 600;">
+                        <button onclick="joinPrivateExam()" class="btn btn-primary">Go</button>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>Performance</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/student.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
+            
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn && typeof handleLogout === 'function') {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        });
+    </script>
+</body>
+</html>
