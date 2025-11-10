@@ -1,3 +1,5 @@
+// EXAM ENGINE: Handles listing exams, test-taking, PROCTORING & SECURITY
+
 let currentExam = null;
 let currentQuestionIndex = 0;
 let userAnswers = {}; 
@@ -20,7 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (examIdToStart) {
         startExam(examIdToStart);
     } else {
-        loadExamLists(currentUser);
+        // Only load list if we are NOT trying to start an exam immediately
+        if (document.getElementById('exam-list-view')) {
+            loadExamLists(currentUser);
+        }
     }
 
     document.getElementById('nextBtn').addEventListener('click', () => navigateQuestion(1));
@@ -31,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (document.hidden && isExamActive) {
             isExamActive = false;
             clearInterval(timerInterval);
-            alert("⚠️ VIOLATION DETECTED ⚠️\n\nYou switched tabs during a proctored exam.\nYour exam will be automatically submitted and flagged for professor review.");
+            alert("⚠️ VIOLATION DETECTED ⚠️\n\nYou switched tabs during a proctored exam.\nYour assessment will be automatically submitted and flagged.");
             submitExam('flagged');
         }
     });
@@ -56,11 +61,11 @@ function disableSecurity() {
 function blockEvent(e) {
     if (isExamActive) {
         e.preventDefault();
-        alert("⚠️ Security Warning: This action is disabled during the exam.");
         return false;
     }
 }
 
+// --- UPDATED LIST LOADER (Available ONLY) ---
 function loadExamLists(user) {
     const allExams = JSON.parse(localStorage.getItem('sesd_exams')) || [];
     const allResults = JSON.parse(localStorage.getItem('sesd_results')) || [];
@@ -68,67 +73,54 @@ function loadExamLists(user) {
     
     const takenExamIds = new Set(myResults.filter(r => r.status !== 'retrying').map(r => r.examId));
 
+    // Filter: Not private AND (assigned to ALL or user's batch)
     const myBatchExams = allExams.filter(exam => 
          (!exam.isPrivate && (exam.assignedBatches.includes('ALL') || exam.assignedBatches.includes(user.batch)))
     );
 
     const availableExams = myBatchExams.filter(exam => !takenExamIds.has(exam.id));
-
-    renderList('availableExamsList', availableExams, 'available');
-
-    renderList('completedExamsList', myResults, 'history', allExams);
-}
-
-function renderList(elementId, items, type, allExams = []) {
-    const container = document.getElementById(elementId);
+    const container = document.getElementById('availableExamsList');
+    
     if (!container) return;
     container.innerHTML = '';
 
-    if (items.length === 0) {
-        container.innerHTML = '<p class="empty-state">Nothing to show here.</p>';
+    if (availableExams.length === 0) {
+        container.innerHTML = '<p class="empty-state">🎉 No assessments available right now.</p>';
         return;
     }
 
-    if (type === 'available') {
-        items.forEach(exam => {
-             container.innerHTML += `
-                <div class="exam-grid-card">
-                    <span class="exam-subject-badge">${exam.subject}</span>
-                    <h3>${exam.title}</h3>
-                    <p style="color: #64748b; margin-bottom: 1.5rem;">${exam.questions.length} Questions • ${exam.duration} Mins</p>
-                    <button onclick="startExam('${exam.id}')" class="btn btn-primary" style="margin-top: auto;">Start Exam</button>
-                </div>
-            `;
-        });
-    } else {
-         items.forEach(result => {
-            const exam = allExams.find(e => e.id === result.examId) || { title: 'Unknown' };
-            
-            let statusBadge = `<div class="exam-status status-completed">Score: ${result.score}/${result.totalMarks}</div>`;
-            if (result.status === 'flagged') {
-                statusBadge = `<div style="background:#fee2e2; color:#991b1b; padding:4px 10px; border-radius:20px; font-weight:600; font-size:0.9rem;">⚠️ Flagged (Violation)</div>`;
-            }
+    const now = new Date();
 
-            container.innerHTML += `
-                <div class="exam-card">
-                     <div class="exam-info">
-                        <h4>${exam.title}</h4>
-                        <p>${new Date(result.dateTaken).toLocaleDateString()}</p>
-                    </div>
-                    ${statusBadge}
-                </div>
-            `;
-        });
+    availableExams.forEach(exam => {
+        // Check Schedule
+        if (exam.startDate && new Date(exam.startDate) > now) return; // Not open yet
+        if (exam.endDate && new Date(exam.endDate) < now) return;   // Already closed
+
+        let typeBadge = `<span class="type-badge type-${exam.type || 'exam'}">${(exam.type || 'exam').toUpperCase()}</span>`;
+
+        container.innerHTML += `
+            <div class="exam-grid-card">
+                <span class="exam-subject-badge">${exam.subject}</span>
+                <h3>${typeBadge} ${exam.title}</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">${exam.questions.length} Questions • ${exam.duration} Mins</p>
+                <button onclick="startExam('${exam.id}')" class="btn btn-primary" style="margin-top: auto;">Start</button>
+            </div>
+        `;
+    });
+
+    if (container.innerHTML === '') {
+         container.innerHTML = '<p class="empty-state">⏳ No assessments are currently open.</p>';
     }
 }
 
+// ==================== EXAM TAKING CORE ====================
 function startExam(examId) {
     const allExams = JSON.parse(localStorage.getItem('sesd_exams')) || [];
     currentExam = allExams.find(e => e.id === examId);
 
     if (!currentExam) return;
 
-    if(!confirm(`🔒 SECURE EXAM ENVIRONMENT:\n\n- Fullscreen will be enabled.\n- Right-click, Copy, and Paste are DISABLED.\n- Switching tabs, minimizing browser, or leaving the exam window will be AUTOMATICALLY DETECTED and flagged as a violation.\n\nAre you ready to begin?`)) {
+    if(!confirm(`Ready to start "${currentExam.title}"?\n\nNote: Fullscreen will be enabled and switching tabs is prohibited.`)) {
          if(window.location.search.includes('start=')) window.location.href = 'exams.html';
          return;
     }
@@ -170,60 +162,29 @@ function renderQuestion() {
 
     switch(q.type) {
         case 'text':
-            container.innerHTML = `
-                <textarea id="textAnswer" class="form-input" rows="6" 
-                    placeholder="Type your answer here..." 
-                    oninput="saveTextAnswer(this.value)"
-                    style="font-family: inherit;">${answer}</textarea>`;
+            container.innerHTML = `<textarea id="textAnswer" class="form-input" rows="6" placeholder="Type your answer here..." oninput="saveTextAnswer(this.value)" style="font-family: inherit;">${answer}</textarea>`;
             break;
-
         case 'code':
-             container.innerHTML = `
-                <div style="background: #1e293b; padding: 10px; border-radius: 8px 8px 0 0; color: #94a3b8; font-size: 0.9rem;">
-                    Code Editor (JavaScript / Python / Pseudo-code)
-                </div>
-                <textarea id="codeAnswer" class="form-input" rows="10" 
-                    placeholder="// Write your code here..." 
-                    oninput="saveTextAnswer(this.value)"
-                    style="font-family: 'Courier New', monospace; background: #0f172a; color: #f8fafc; border-radius: 0 0 8px 8px;">${answer}</textarea>`;
+             container.innerHTML = `<div style="background: #1e293b; padding: 10px; border-radius: 8px 8px 0 0; color: #94a3b8; font-size: 0.9rem;">Code Editor</div><textarea id="codeAnswer" class="form-input" rows="10" placeholder="// Write code here..." oninput="saveTextAnswer(this.value)" style="font-family: 'Courier New', monospace; background: #0f172a; color: #f8fafc; border-radius: 0 0 8px 8px;">${answer}</textarea>`;
             break;
-
         case 'file':
-            container.innerHTML = `
-                <div style="border: 2px dashed #cbd5e1; padding: 2rem; text-align: center; border-radius: 12px;">
-                    <p style="margin-bottom: 1rem; color: #64748b;">Upload your solution file (PDF, ZIP, etc.)</p>
-                    <input type="file" id="fileAnswer" onchange="saveFileAnswer(this)">
-                    <p id="fileNameDisplay" style="margin-top: 1rem; font-weight: 600; color: #2563eb;">
-                        ${answer ? 'Current file: ' + answer : ''}
-                    </p>
-                </div>`;
+            container.innerHTML = `<div style="border: 2px dashed #cbd5e1; padding: 2rem; text-align: center; border-radius: 12px;"><p style="color: #64748b;">Upload solution file</p><input type="file" onchange="saveFileAnswer(this)"><p id="fileNameDisplay" style="margin-top: 1rem; font-weight: 600; color: #2563eb;">${answer ? 'Selected: ' + answer : ''}</p></div>`;
             break;
-
         case 'mcq':
         default:
             q.options.forEach((optionText, idx) => {
                 const isChecked = (userAnswers[currentQuestionIndex] === idx) ? 'checked' : '';
-                container.innerHTML += `
-                    <div>
-                        <input type="radio" id="opt_${idx}" name="q_opts" class="option-input" ${isChecked} onchange="saveMcqAnswer(${idx})">
-                        <label for="opt_${idx}" class="option-label"><span class="option-custom-radio"></span>${optionText}</label>
-                    </div>`;
+                container.innerHTML += `<div><input type="radio" id="opt_${idx}" name="q_opts" class="option-input" ${isChecked} onchange="saveMcqAnswer(${idx})"><label for="opt_${idx}" class="option-label"><span class="option-custom-radio"></span>${optionText}</label></div>`;
             });
             break;
     }
-
     updateProgressBar();
     updateNavButtons();
 }
 
 function saveMcqAnswer(idx) { userAnswers[currentQuestionIndex] = idx; }
 function saveTextAnswer(val) { userAnswers[currentQuestionIndex] = val; }
-function saveFileAnswer(input) {
-    if (input.files && input.files[0]) {
-        userAnswers[currentQuestionIndex] = input.files[0].name;
-        document.getElementById('fileNameDisplay').innerText = "Selected: " + input.files[0].name;
-    }
-}
+function saveFileAnswer(input) { if (input.files && input.files[0]) { userAnswers[currentQuestionIndex] = input.files[0].name; document.getElementById('fileNameDisplay').innerText = "Selected: " + input.files[0].name; } }
 
 function submitExam(status = 'completed') {
     isExamActive = false; 
@@ -232,12 +193,9 @@ function submitExam(status = 'completed') {
 
     let score = 0;
     let totalMarks = 0;
-
     currentExam.questions.forEach((q, idx) => {
         totalMarks += q.marks;
-        if (q.type === 'mcq' && userAnswers[idx] === q.correctOption) {
-            score += q.marks;
-        }
+        if (q.type === 'mcq' && userAnswers[idx] === q.correctOption) score += q.marks;
     });
 
     const currentUser = JSON.parse(localStorage.getItem('sesd_currentUser'));
@@ -258,11 +216,8 @@ function submitExam(status = 'completed') {
 
     localStorage.setItem('sesd_results', JSON.stringify(allResults));
 
-    if (status === 'flagged') {
-        window.location.href = 'dashboard.html'; 
-    } else {
-        window.location.href = 'results.html';
-    }
+    if (status === 'flagged') window.location.href = 'dashboard.html';
+    else window.location.href = 'results.html';
 }
 
 function startTimer() {
@@ -270,9 +225,7 @@ function startTimer() {
     timerInterval = setInterval(() => {
         timeRemaining--;
         updateTimerDisplay();
-        if (timeRemaining <= 0) {
-            submitExam('completed'); 
-        }
+        if (timeRemaining <= 0) submitExam('completed'); 
     }, 1000);
 }
 function updateTimerDisplay() {

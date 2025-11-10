@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Exams - SESD Exam Portal</title>
+    <title>Assessments - SESD Exam Portal</title>
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/student.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
             <a href="dashboard.html" class="logo">SESD Portal</a>
             <ul class="nav-links">
                 <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="exams.html" class="active">My Exams</a></li>
+                <li><a href="exams.html" class="active">Assessments</a></li>
                 <li><a href="results.html">Results</a></li>
                 <li><a href="profile.html">Profile</a></li>
                 <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
@@ -25,41 +25,32 @@
 
     <main class="container dashboard-container">
 
+        <!-- ==================== VIEW 1: AVAILABLE LIST ONLY ==================== -->
         <div id="exam-list-view">
             <header class="dashboard-header">
                 <div>
-                    <h1>My Exams</h1>
-                    <p>View available tests and review your history.</p>
+                    <h1>Available Assessments</h1>
+                    <p>Exams, quizzes, and assignments ready for you to take.</p>
                 </div>
             </header>
 
-            <div class="exam-tabs">
-                <button class="tab-btn active" onclick="switchTab('available')">Available Now</button>
-                <button class="tab-btn" onclick="switchTab('completed')">Completed</button>
-            </div>
-
+            <!-- No more tabs, just the list directly -->
             <section id="available-tab" class="tab-content active">
                 <div class="exam-list-grid" id="availableExamsList">
-                    <p class="empty-state">Loading available exams...</p>
-                </div>
-            </section>
-
-            <section id="completed-tab" class="tab-content" style="display: none;">
-                 <div class="exam-list" id="completedExamsList">
-                     <p class="empty-state">Loading history...</p>
+                    <p class="empty-state">Loading available assessments...</p>
                 </div>
             </section>
         </div>
 
+        <!-- ==================== VIEW 2: TAKING EXAM (Hidden by default) ==================== -->
         <div id="exam-taking-view" style="display: none;">
             <div class="exam-sticky-header">
                 <div class="container exam-header-flex">
                     <div>
-                        <h2 id="activeExamTitle">Exam Title Loading...</h2>
-                        <span class="exam-subject-badge" id="activeExamSubject">Subject</span>
+                        <h2 id="activeExamTitle">Loading...</h2>
+                        <span class="exam-subject-badge" id="activeExamSubject">-</span>
                     </div>
                     <div class="timer-container">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                         <span id="examTimer">00:00:00</span>
                     </div>
                 </div>
@@ -70,22 +61,19 @@
 
             <div class="question-container">
                 <div class="question-header">
-                    <span class="question-number">Question <span id="currentQNum">1</span> of <span id="totalQNum">10</span></span>
-                    <span class="question-points" id="questionPoints">1 Point</span>
+                    <span class="question-number">Question <span id="currentQNum">1</span> of <span id="totalQNum">-</span></span>
+                    <span class="question-points" id="questionPoints">- Pts</span>
                 </div>
                 
-                <h3 class="question-text" id="questionText">
-                    Question text will appear here...
-                </h3>
+                <h3 class="question-text" id="questionText">Loading Question...</h3>
 
-                <div class="options-list" id="optionsList">
-                </div>
+                <div class="options-list" id="optionsList"></div>
             </div>
 
             <div class="exam-footer">
                 <button id="prevBtn" class="btn btn-secondary" disabled>Previous</button>
                 <button id="nextBtn" class="btn btn-primary">Next Question</button>
-                <button id="submitExamBtn" class="btn" style="background-color: #059669; color: white; display: none;">Submit Exam</button>
+                <button id="submitExamBtn" class="btn" style="background-color: #059669; color: white; display: none;">Submit Assessment</button>
             </div>
         </div>
 
@@ -96,22 +84,9 @@
     <script src="../assets/js/exam_engine.js"></script>
 
     <script>
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
-            
-            if (tabName === 'available') {
-                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
-                document.getElementById('available-tab').style.display = 'block';
-            } else {
-                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
-                document.getElementById('completed-tab').style.display = 'block';
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
              const logoutBtn = document.getElementById('logoutBtn');
-             if (logoutBtn && typeof handleLogout === 'function') {
+             if (logoutBtn && typeof handleLogout !== 'undefined') {
                  logoutBtn.addEventListener('click', handleLogout);
              }
         });

@@ -2,18 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Exams - SESD Portal</title>
+    <title>Manage Assessments - SESD Portal</title>
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/student.css">
-    <style>
-        .creator-container { display: grid; grid-template-columns: 350px 1fr; gap: 2rem; align-items: start; }
-        .question-builder { background: white; padding: 2rem; border-radius: 16px; border: 1px solid #e2e8f0; }
-        .added-question { background: #f8fafc; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; border-left: 4px solid #2563eb; position: relative; }
-        .delete-q-btn { position: absolute; top: 10px; right: 10px; color: #ef4444; cursor: pointer; }
-        .access-toggle { background: #f1f5f9; padding: 4px; border-radius: 8px; display: flex; margin-bottom: 1rem; }
-        .access-btn { flex: 1; padding: 8px; border: none; background: none; cursor: pointer; border-radius: 6px; font-weight: 500; color: #64748b; }
-        .access-btn.active { background: white; color: #2563eb; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    </style>
+    <link rel="stylesheet" href="../assets/css/professor.css">
 </head>
 <body>
     <nav class="navbar">
@@ -22,7 +14,7 @@
             <ul class="nav-links">
                 <li><a href="dashboard.html">Dashboard</a></li>
                 <li><a href="students.html">Students</a></li>
-                <li><a href="exams.html" class="active">Exams</a></li>
+                <li><a href="exams.html" class="active">Assessments</a></li>
                 <li><a href="grade.html">Grades</a></li>
                 <li><button id="logoutBtn" class="btn btn-secondary">Logout</button></li>
             </ul>
@@ -31,44 +23,49 @@
 
     <main class="container dashboard-container">
         <header class="dashboard-header">
-            <div><h1 id="formTitle">Exam Manager</h1><p>Create new exams or manage existing ones.</p></div>
+            <div><h1 id="formTitle">Assessment Manager</h1><p>Create exams, quizzes, and assignments.</p></div>
         </header>
 
         <div class="exam-tabs">
-            <button class="tab-btn active" onclick="switchProfTab('create')">Create New Exam</button>
-            <button class="tab-btn" onclick="switchProfTab('list')">View My Exams</button>
+            <button class="tab-btn active" onclick="switchProfTab('create')">Create New</button>
+            <button class="tab-btn" onclick="switchProfTab('list')">View All</button>
         </div>
 
         <div id="create-tab" class="tab-content">
             <div class="creator-container">
+                <!-- LEFT: Details -->
                 <div class="dashboard-card">
-                    <h3>1. Exam Details</h3>
-                    <div class="form-group"><label class="form-label">Exam Title</label><input type="text" id="examTitle" class="form-input" placeholder="e.g., Certification Final"></div>
-                    <div class="form-group"><label class="form-label">Subject</label><select id="examSubject" class="form-input"><option>Computer Science</option><option>Mathematics</option><option>General Knowledge</option><option>Certification</option></select></div>
-                    <div class="form-group"><label class="form-label">Duration (Mins)</label><input type="number" id="examDuration" class="form-input" value="60"></div>
+                    <h3>1. Details & Schedule</h3>
+                    
+                    <!-- NEW: TYPE SELECTION -->
+                    <div class="form-group">
+                        <label class="form-label">Assessment Type</label>
+                        <select id="examType" class="form-input" style="font-weight: 600; color: #2563eb;">
+                            <option value="exam">🔴 Standard Exam (Proctored)</option>
+                            <option value="quiz">🟡 Quiz (Quick, Auto-graded)</option>
+                            <option value="assignment">🟢 Assignment (Submission based)</option>
+                        </select>
+                    </div>
 
-                    <div style="margin-bottom: 1.5rem;">
-                         <label class="form-label">Schedule (Optional)</label>
+                    <div class="form-group"><label class="form-label">Title</label><input type="text" id="examTitle" class="form-input" placeholder="e.g., Midterm, Homework 1..."></div>
+                    <div class="form-group"><label class="form-label">Subject/Course</label><select id="examSubject" class="form-input"><option>Computer Science</option><option>Mathematics</option><option>General Knowledge</option><option>Certification Course</option></select></div>
+                    <div class="form-group"><label class="form-label">Duration (Minutes)</label><input type="number" id="examDuration" class="form-input" value="60"></div>
+
+                    <div style="margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+                         <label class="form-label">📅 Availability Window (Optional)</label>
                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                             <div>
-                                 <span class="text-small" style="color:#64748b">Start Date/Time</span>
-                                 <input type="datetime-local" id="examStart" class="form-input" style="font-size: 0.9rem;">
-                             </div>
-                             <div>
-                                 <span class="text-small" style="color:#64748b">End Date/Time</span>
-                                 <input type="datetime-local" id="examEnd" class="form-input" style="font-size: 0.9rem;">
-                             </div>
+                             <div><span class="text-small" style="color:#64748b">Opens At</span><input type="datetime-local" id="examStart" class="form-input" style="font-size: 0.9rem;"></div>
+                             <div><span class="text-small" style="color:#64748b">Closes At</span><input type="datetime-local" id="examEnd" class="form-input" style="font-size: 0.9rem;"></div>
                          </div>
                     </div>
                     
-                    <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-                        <label class="form-label" style="color:#0f172a; margin-bottom: 0.5rem;">Exam Access Type</label>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label class="form-label">Access Control</label>
                         <div class="access-toggle">
-                            <button class="access-btn active" onclick="toggleAccessType('batch')" id="btnBatch">College Batch</button>
+                            <button class="access-btn active" onclick="toggleAccessType('batch')" id="btnBatch">Batch Assigned</button>
                             <button class="access-btn" onclick="toggleAccessType('private')" id="btnPrivate">Private Code</button>
                         </div>
                         <div id="batchAccessGroup">
-                            <label class="form-label text-small">Select Batches</label>
                             <select id="examBatches" class="form-input" multiple size="3" style="font-size: 0.9rem;">
                                 <option value="ALL" selected>ALL My Batches</option>
                                 <option value="Batch-A">Batch A</option>
@@ -77,39 +74,46 @@
                             </select>
                         </div>
                         <div id="privateAccessGroup" style="display: none;">
-                            <p class="text-small" style="color: #64748b; background: #fff; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1;">🔑 A unique 6-digit access code will be generated when you save.</p>
+                            <p class="text-small" style="padding: 8px; background: #f0f9ff; color: #0369a1; border-radius: 6px;">🔑 Code generated on save.</p>
                         </div>
                         <input type="hidden" id="selectedAccessType" value="batch">
                     </div>
 
-                    <button onclick="finalizeExam()" class="btn btn-primary btn-full" style="margin-top: 1.5rem;">✅ Save & Publish</button>
+                    <!-- NEW: CERTIFICATION TOGGLE -->
+                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; border: 2px dashed #fbbf24; border-radius: 8px; background: #fffbeb;">
+                        <input type="checkbox" id="hasCertificate" style="width: 20px; height: 20px;">
+                        <label for="hasCertificate" style="font-weight: 600; color: #92400e; cursor: pointer;">🏆 Award Certificate if score > 70%</label>
+                    </div>
+
+                    <button onclick="finalizeExam()" class="btn btn-primary btn-full" style="margin-top: 1rem;">✅ Publish Assessment</button>
                 </div>
 
+                <!-- RIGHT: Question Builder -->
                 <div class="question-builder">
-                    <h3>2. Add Questions</h3>
+                    <h3>2. Content Builder</h3>
                     <div style="background: #f1f5f9; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
                         <div class="form-group">
-                            <label class="form-label">Question Type</label>
+                            <label class="form-label">Content Type</label>
                             <select id="qType" class="form-input" onchange="toggleQuestionFields()">
                                 <option value="mcq">Multiple Choice</option>
-                                <option value="text">Long Text Answer</option>
-                                <option value="code">Code Editor</option>
-                                <option value="file">File Upload</option>
+                                <option value="text">Written Response</option>
+                                <option value="code">Code Submission</option>
+                                <option value="file">File Upload (PDF/Zip)</option>
                             </select>
                         </div>
-                        <div class="form-group"><label class="form-label">Question Text</label><textarea id="qText" class="form-input" rows="3" placeholder="Enter question..."></textarea></div>
-                        <div class="form-group"><label class="form-label">Marks</label><input type="number" id="qMarks" class="form-input" value="1" style="width: 100px;"></div>
+                        <div class="form-group"><label class="form-label">Prompt / Question</label><textarea id="qText" class="form-input" rows="3" placeholder="Enter question text..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Points</label><input type="number" id="qMarks" class="form-input" value="5" style="width: 100px;"></div>
                         <div id="mcqFields">
-                            <label class="form-label">Options (Select correct radio)</label>
-                            <div class="mb-1"><input type="radio" name="correctOpt" value="0" checked> <input type="text" id="opt0" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option 1"></div>
-                            <div class="mb-1"><input type="radio" name="correctOpt" value="1"> <input type="text" id="opt1" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option 2"></div>
-                            <div class="mb-1"><input type="radio" name="correctOpt" value="2"> <input type="text" id="opt2" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option 3"></div>
-                            <div class="mb-1"><input type="radio" name="correctOpt" value="3"> <input type="text" id="opt3" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option 4"></div>
+                            <label class="form-label">Options (Check correct answer)</label>
+                            <div class="mb-1"><input type="radio" name="correctOpt" value="0" checked> <input type="text" id="opt0" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option A"></div>
+                            <div class="mb-1"><input type="radio" name="correctOpt" value="1"> <input type="text" id="opt1" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option B"></div>
+                            <div class="mb-1"><input type="radio" name="correctOpt" value="2"> <input type="text" id="opt2" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option C"></div>
+                            <div class="mb-1"><input type="radio" name="correctOpt" value="3"> <input type="text" id="opt3" class="form-input" style="width: 80%; display: inline-block;" placeholder="Option D"></div>
                         </div>
-                        <button onclick="addQuestionToExam()" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">+ Add Question</button>
+                        <button onclick="addQuestionToExam()" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">+ Add to Assessment</button>
                     </div>
-                    <h3>Added Questions (<span id="qCount">0</span>)</h3>
-                    <div id="addedQuestionsList"><p class="empty-state">No questions added.</p></div>
+                    <h3>Items (<span id="qCount">0</span>)</h3>
+                    <div id="addedQuestionsList"><p class="empty-state">Empty.</p></div>
                 </div>
             </div>
         </div>

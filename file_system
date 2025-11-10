@@ -1,0 +1,28 @@
+/project-root
+│ index.html
+│ about.html
+│ login.html
+│ signup.html
+│
+├── student/
+│   ├── dashboard.html
+│   ├── exams.html
+│   └── results.html
+│
+├── professor/
+│   ├── dashboard.html
+│   ├── students.html
+│   ├── exams.html
+│   └── grade.html
+│
+└── assets/
+    ├── css/
+    │   ├── main.css
+    │   ├── student.css
+    │   └── professor.css
+    └── js/
+        ├── main.js
+        ├── auth.js
+        ├── student.js
+        ├── professor.js
+        └── exam_engine.js
