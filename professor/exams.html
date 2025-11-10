@@ -12,16 +12,12 @@
         /* Additional styles for the revamped UI */
         .creator-grid {
             display: grid;
-            grid-template-columns: 350px 1fr; /* Fixed width for settings, rest for content */
+            /* UPDATED: Forced single column layout to create "two rows" */
+            grid-template-columns: 1fr; 
             gap: 2rem;
             align-items: start;
-        }
-
-        /* --- NEW: Responsive Fix for Overlap --- */
-        @media (max-width: 1024px) {
-            .creator-grid {
-                grid-template-columns: 1fr; /* Stack vertically on smaller screens */
-            }
+            max-width: 800px; /* Optional: limit width so it doesn't get too stretched on big screens */
+            margin: 0 auto; /* Center it if max-width is used */
         }
 
         .creator-card {
@@ -157,7 +153,7 @@
 
         <div id="create-tab" class="tab-content">
             <div class="creator-grid">
-                <!-- LEFT COLUMN: Settings -->
+                <!-- ROW 1: Settings -->
                 <div class="creator-card">
                     <h3>Assessment Settings</h3>
                     
@@ -233,10 +229,9 @@
                         </div>
                     </div>
 
-                    <button onclick="finalizeExam()" class="btn btn-primary btn-full" style="padding: 1rem; font-size: 1.1rem;">Save & Publish Assessment</button>
                 </div>
 
-                <!-- RIGHT COLUMN: Content -->
+                <!-- ROW 2: Content (Moved below Settings in HTML for natural stacking if grid fails, but grid handles it too) -->
                 <div class="creator-card">
                     <h3>Content Builder</h3>
                     
@@ -287,6 +282,9 @@
                     <div id="addedQuestionsList">
                         <p class="empty-state">No questions added yet.</p>
                     </div>
+
+                    <!-- Moved Save button to the very bottom of the second row for better flow -->
+                    <button onclick="finalizeExam()" class="btn btn-primary btn-full" style="padding: 1rem; font-size: 1.1rem; margin-top: 2rem;">Save & Publish Assessment</button>
                 </div>
             </div>
         </div>
